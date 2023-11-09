@@ -4,9 +4,10 @@ import { useParams } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import ReviewForm from "../reviewForm/ReviewForm";
 
+
 import React from 'react'
 
-function Reviews({ getMovieData, movie, reviews, setReviews }) {
+const Reviews = ({ getMovieData, movie, reviews, setReviews }) => {
 
     const revText = useRef();
     let params = useParams();
@@ -16,7 +17,26 @@ function Reviews({ getMovieData, movie, reviews, setReviews }) {
         getMovieData(movieId);
     }, [])
 
+    const addReview = async (e) => {
+        e.preventDefault();
 
+        const rev = revText.current;
+
+        try {
+
+            const response = await api.post("/api/v1/reviews", { reviewBody: rev.value, imdbId: movieId });
+
+            const updateReviews = [...reviews, { body: rev.value }];
+
+            rev.value = "";
+
+            setReviews(updateReviews);
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+    }
 
     return (
         <Container>
@@ -32,7 +52,7 @@ function Reviews({ getMovieData, movie, reviews, setReviews }) {
                         <>
                             <Row>
                                 <Col>
-                                    <RevoewForm handleSubmit={addReview} revText={revText} labelText="Write a review" />
+                                    <ReviewForm handleSubmit={addReview} revText={revText} labelText="Write a review?" />
                                 </Col>
                             </Row>
                             <Row>
